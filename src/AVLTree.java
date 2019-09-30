@@ -147,27 +147,26 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
     }
 
     private static final int ALLOWED_IMBALANCE = 1;
-
-    // Assume t is either balanced or within one of being balanced
-    private AvlNode<AnyType> balance( AvlNode<AnyType> element )
+    // Assume node is either balanced or within one of being balanced
+    private AvlNode<AnyType> balance( AvlNode<AnyType> node )
     {
-        if( element == null )
-            return element;
+        if( node == null )
+            return node;
 
-        if( height( element.left ) - height( element.right ) > ALLOWED_IMBALANCE )
-            if( height( element.left.left ) >= height( element.left.right ) )
-                element = rightRotation( element );
+        if( height( node.left ) - height( node.right ) > ALLOWED_IMBALANCE )
+            if( height( node.left.left ) >= height( node.left.right ) )
+                node = rightRotation( node );
             else
-                element = doubleRightRotation( element );
+                node = doubleRightRotation( node );
         else
-        if( height( element.right ) - height( element.left ) > ALLOWED_IMBALANCE )
-            if( height( element.right.right ) >= height( element.right.left ) )
-                element = leftRotation( element );
+        if( height( node.right ) - height( node.left ) > ALLOWED_IMBALANCE )
+            if( height( node.right.right ) >= height( node.right.left ) )
+                node = leftRotation( node );
             else
-                element = doubleLeftRotation( element );
+                node = doubleLeftRotation( node );
 
-        element.height = Math.max( height( element.left ), height( element.right ) ) + 1;
-        return element;
+        node.height = Math.max( height( node.left ), height( node.right ) ) + 1;
+        return node;
     }
 
     public void checkBalance( )
@@ -175,22 +174,44 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
         checkBalance( root );
     }
 
-    private int checkBalance( AvlNode<AnyType> element )
+    private int checkBalance( AvlNode<AnyType> node )
     {
-        if( element == null )
+        if( node == null )
             return -1;
 
-        if( element != null )
+        else
         {
-            int hl = checkBalance( element.left );
-            int hr = checkBalance( element.right );
-            if( Math.abs( height( element.left ) - height( element.right ) ) > 1 ||
-                    height( element.left ) != hl || height( element.right ) != hr )
+            int hl = checkBalance( node.left );
+            int hr = checkBalance( node.right );
+            if( Math.abs( height( node.left ) - height( node.right ) ) > 1 ||
+                    height( node.left ) != hl || height( node.right ) != hr )
                 System.out.println( "\n\n***********************OOPS!!" );
         }
 
-        return height( element );
+        return height( node );
     }
+
+    private int mycheckBalanceInt( AvlNode<AnyType> node )
+    {
+        if( node == null )
+            return 1;
+
+        else
+        {
+            int hl = mycheckBalanceInt( node.left );
+            int hr = mycheckBalanceInt( node.right );
+            if( Math.abs( height( node.left ) - height( node.right ) ) > 1 ||
+                    height( node.left ) != hl || height( node.right ) != hr )
+                return -1;
+        }
+
+        return 1;
+    }
+    private boolean myCheckBalance(AvlNode<AnyType> node){
+        return (mycheckBalanceInt(node) == 1);
+
+    }
+
 
 
     /**
@@ -232,41 +253,38 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
 
     /**
      * WAS RETURN TYPE AvlNode<AnyType></AnyType>
-     * @param node
+     * @param  node
      */
     private AvlNode<AnyType> deleteMin( AvlNode<AnyType> node )
     {
-
-        AvlNode<AnyType> leftNode = node.left;
+        AvlNode<AnyType> leftNode;
+        // still doesn't delete root node...
+        if (node == null) {
+            this.root = null;
+            return null;}
+        if (node.left != null) {
+            leftNode = node.left;
         while (leftNode.left != null) {
             node = leftNode;
             leftNode = leftNode.left;}
 
         if (leftNode.right == null)
             node.left = null;
-        else
-            node.left = leftNode.right;
-
-//        if (node == null)
-//            return node;
-//        while (node.left != null)
-//            node = node.left;
+        else{
+            node.left = leftNode.right;}
+//        if (!(myCheckBalance(root))){
         balance(root);
-        return root;
-    }
 
+        return root;}
 
-    private void insertNodeAndChildren(AvlNode<AnyType> node){
-        if (node.left == null && node.right == null){
-            insert(node.element);
-        }
-        else if (node.left != null){
-            insertNodeAndChildren(node.left);
-        }
         else {
-            insertNodeAndChildren(node.right);
+            node.right = null;
+            balance (root);
+            return node;
         }
     }
+
+
 
     /**
      * Internal method to find the largest item in a subtree.
