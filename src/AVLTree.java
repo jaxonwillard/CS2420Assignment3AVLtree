@@ -72,7 +72,11 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
             node.right = remove( node.element, node.right );
         }
         else
-            node = ( node.left != null ) ? node.left : node.right;
+//            node = ( node.left != null ) ? node.left : node.right;
+            if (node.left != null)
+                node = node.left;
+            else
+                node = node.right;
         return balance( node );
     }
 
@@ -89,7 +93,7 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
 
     public  void  deleteMin( ){
 
-        root =  deleteMin(root, root.left);
+        root =  deleteMin(root);
      }
 
     /**
@@ -230,27 +234,23 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
      * WAS RETURN TYPE AvlNode<AnyType></AnyType>
      * @param node
      */
-    private AvlNode<AnyType> deleteMin( AvlNode<AnyType> node, AvlNode<AnyType> nodeLeft )
+    private AvlNode<AnyType> deleteMin( AvlNode<AnyType> node )
     {
-        if (node == null){
-            balance(root);
-            return root;
-        }
-        else if (nodeLeft == null){
-            if (node.right != null){
-                insertNodeAndChildren(node.right);
-            }
-            node = null;
-        }
-        else if (nodeLeft.left == null){
-            if (node.left.right != null){
-                insertNodeAndChildren(node.left.right);
-            }
+
+        AvlNode<AnyType> leftNode = node.left;
+        while (leftNode.left != null) {
+            node = leftNode;
+            leftNode = leftNode.left;}
+
+        if (leftNode.right == null)
             node.left = null;
-        }
-        else {
-            deleteMin(node.left, nodeLeft.left);
-        }
+        else
+            node.left = leftNode.right;
+
+//        if (node == null)
+//            return node;
+//        while (node.left != null)
+//            node = node.left;
         balance(root);
         return root;
     }
