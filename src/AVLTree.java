@@ -9,6 +9,7 @@
 // boolean remove( x )    --> Return true if x was present
 // Comparable findMin( )  --> Return smallest item
 // Comparable deleteMin( )--> Remove smallest item
+// Comparable deleteMin( )--> Remove smallest item
 // Comparable findMax( )  --> Return largest item
 // boolean isEmpty( )     --> Return true if empty; else false
 // void makeEmpty( )      --> Remove all items
