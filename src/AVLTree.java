@@ -8,6 +8,7 @@
 // boolean contains( x )  --> Return true if x is present
 // boolean remove( x )    --> Return true if x was present
 // Comparable findMin( )  --> Return smallest item
+// Comparable deleteMin( )--> Remove smallest item
 // Comparable findMax( )  --> Return largest item
 // boolean isEmpty( )     --> Return true if empty; else false
 // void makeEmpty( )      --> Remove all items
@@ -93,7 +94,7 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
 
     public  void  deleteMin( ){
 
-        deleteMin(root, root.left);
+        root = deleteMin(root);
      }
 
     /**
@@ -150,8 +151,8 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
     // Assume node is either balanced or within one of being balanced
     private AvlNode<AnyType> balance( AvlNode<AnyType> node )
     {
-        if( node == null )
-            return node;
+        if( node == null ){
+            return node;}
 
         if( height( node.left ) - height( node.right ) > ALLOWED_IMBALANCE )
             if( height( node.left.left ) >= height( node.left.right ) )
@@ -162,17 +163,14 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
         if( height( node.right ) - height( node.left ) > ALLOWED_IMBALANCE )
             if( height( node.right.right ) >= height( node.right.left ) )
                 node = leftRotation( node );
-            else
+            else{
                 node = doubleLeftRotation( node );
+            }
 
         node.height = Math.max( height( node.left ), height( node.right ) ) + 1;
         return node;
     }
 
-    public void checkBalance( )
-    {
-        checkBalance( root );
-    }
 
     private int checkBalance( AvlNode<AnyType> node )
     {
@@ -190,28 +188,6 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
 
         return height( node );
     }
-
-    private int mycheckBalanceInt( AvlNode<AnyType> node )
-    {
-        if( node == null )
-            return 1;
-
-        else
-        {
-            int hl = mycheckBalanceInt( node.left );
-            int hr = mycheckBalanceInt( node.right );
-            if( Math.abs( height( node.left ) - height( node.right ) ) > 1 ||
-                    height( node.left ) != hl || height( node.right ) != hr )
-                return -1;
-        }
-
-        return 1;
-    }
-    private boolean myCheckBalance(AvlNode<AnyType> node){
-        return (mycheckBalanceInt(node) == 1);
-
-    }
-
 
 
     /**
@@ -252,63 +228,18 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
 
 
     /**
-     * WAS RETURN TYPE AvlNode<AnyType></AnyType>
-     * @param  node
+     * Remove smallest item
+     * @param node
+     * @return AnyType
      */
-    private AvlNode<AnyType> deleteMinIterative( AvlNode<AnyType> node )
-    {
-        AvlNode<AnyType> leftNode;
-        // still doesn't delete root node...
-        if (node == null) {
-            this.root = null;
-            return null;}
-        if (node.left != null) {
-            leftNode = node.left;
-            while (leftNode.left != null) {
-                node = leftNode;
-                leftNode = leftNode.left;}
-
-            if (leftNode.right == null)
-                node.left = null;
-            else{
-                node.left = leftNode.right;}
-            balance(root);
-            return root;
-        }
-        else {
-            node.right = null;
-            balanceTree (root);
-            return node;
-        }
-    }
-
-    private void deleteMin(AvlNode<AnyType> node, AvlNode<AnyType> leftNode){
-        if (node == null){return;}
-        else if (leftNode == null){
-            node.right = null;
-        }
-        else if (leftNode.left != null){
-            deleteMin(node.left, leftNode.left);
-        }
-        else if (leftNode.left == null){
-            if (leftNode.right != null){
-                node.left = leftNode.right;
-            }
-            else {node.left = null;}
-        }
-        if (node.left != null)
-            balance(node.left);
-        else balance(node);
-        }
+        private AvlNode<AnyType> deleteMin(AvlNode<AnyType> node){
+            if (node == null){return node;}
+            if (node.left == null){ return balance(node.right); }
+            node.left = deleteMin(node.left);
+            return balance(node); }
 
 
-    private void balanceTree(AvlNode<AnyType> node){
 
-        if (node.left != null){ balance(node.left);}
-        if (node.right != null){ balance(node.right);}
-        balance(node);
-
-    }
 
     /**
      * Internal method to find the largest item in a subtree.
