@@ -32,6 +32,8 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
         root = null;
     }
 
+    
+
     /**
      * Insert into the tree; duplicates are ignored.
      * @param element the item to insert.

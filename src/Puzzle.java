@@ -97,7 +97,10 @@ public class Puzzle {
 
         }
 
-        initNode = new Node(null, "", this, varPos, "Initial", 0);
+        /*
+        stepsTo is hardcoded to 0
+         */
+        initNode = new Node(null, "", this, varPos, "Initial", 0, 0);
         //System.out.println(initNode.toString());
     }
 
@@ -190,7 +193,6 @@ public class Puzzle {
         return (Puzzle[]) puzzles.toArray(new Puzzle[0]);
     }
 
-
     public int getFixedPosition(int v) {
         return fixedPos[v];
     }
@@ -220,6 +222,54 @@ public class Puzzle {
     public Node getInitNode() {
         return initNode;
     }
+
+
+    public void aStarSolve(boolean doPrint) {
+        System.out.println("========================");
+        System.out.println(initNode.toString());
+
+        Node solution = null;
+
+        Node[] rootList = initNode.expand();
+
+        AVLTree nodeLinkedList = new AVLTree(initNode);
+        for (Node i : rootList) {
+            nodeLinkedList.add(i);
+        }
+
+        int hashKey = 0;
+        Hashtable<Integer, Integer> nodesHashTable = new Hashtable<>();
+
+        while (solution == null) {
+
+            for (int i = 0; i < nodeLinkedList.getSize() - 1; i++) {
+                if (nodeLinkedList.find(i).isGoal()) {
+                    solution = nodeLinkedList.find(i);
+                    break;
+                }
+                // Check if Node hash is in hash table and if not, add to nodes ArrayList
+                else{
+                    Node[] childList = nodeLinkedList.find(i).expand();
+                    for (Node newChild : childList){
+                        if (!nodesHashTable.contains(newChild.hashCode())) {
+                            nodeLinkedList.add(newChild);
+                            nodesHashTable.put(hashKey, newChild.hashCode());
+                            hashKey++;
+                        }
+                    }
+                }
+            }
+
+        }
+
+
+        System.out.print("\n\nSOLUTION  of Depth " + solution.getDepth());
+        System.out.println(" Total Nodes Expanded " + nodeLinkedList.getSize() + "\n");
+        printSolution(solution);
+
+    }
+
+
 
 
     public void solve(boolean doPrint) {
@@ -266,6 +316,13 @@ public class Puzzle {
         printSolution(solution);
 
     }
+
+    public void printInitialNode(){
+        System.out.println("========================");
+        System.out.println(initNode.toString());
+    }
+
+
 
 
     /**

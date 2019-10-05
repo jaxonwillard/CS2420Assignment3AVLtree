@@ -14,12 +14,13 @@ public class TheMain {
         // read all the puzzles in file.  Only the first few are solvable without additional strategies
         Puzzle[] puzzles = Puzzle.readPuzzlesFromFile("jamsAll.txt");
         //int num_puzzles = puzzles.length;
-        int num_puzzles = 40; // Turn to 40 at the end
+        int num_puzzles = 1; // Turn to 40 at the end
 
         boolean doPrint = true;
         // solve each of the first six puzzles.  The others will likely take too long
         for (int i = 0; i < num_puzzles; i++) {
-            puzzles[i].solve(doPrint);
+//            puzzles[i].solve(doPrint);
+            puzzles[i].printInitialNode();
         }
         }
     }

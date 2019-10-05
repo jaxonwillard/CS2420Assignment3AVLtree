@@ -1,17 +1,20 @@
 import java.util.ArrayList;
 
-public class Node {
+public class Node implements Comparable<Node> {
 
-    private String history;  //Sequence of moves to get to this state
-    private Node parent;//Node from which this node was expanded
+    private String history;   //Sequence of moves to get to this state
+    private Node parent;      //Node from which this node was expanded
     private Node next;
-    private Puzzle puzzle;   //Puzzle this node is trying to solve
-    private int varPos[];    //Starting point of the variable location of car
-    private String move;     //Most recent move  in format Cx.y  where Car x is moved to location y.
-    private int depth;       //Total number of moves in history
-    private int grid[][];    //Current contents of grid in terms of car number.
-    private int hashcode;
-    // state of grid in coded form (for easy comparison)
+    private Puzzle puzzle;    // Puzzle this node is trying to solve
+    private int varPos[];     //Starting point of the variable location of car
+    private String move;      //Most recent move  in format Cx.y  where Car x is moved to location y.
+    private int depth;        //Total number of moves in history
+    private int grid[][];     //Current contents of grid in terms of car number.
+    private int hashcode;     // state of grid in coded form (for easy comparison)
+    private int stepsTo;      // estimated number of remaining moves to reach a solution
+    private Integer priority; //depth + stepsTo
+
+
 
     final int GOAL_CAR = 0;
     /**
@@ -22,16 +25,22 @@ public class Node {
      * @param move    Last Move
      * @param depth   Total number of moves to get to this node
      */
-    Node(Node parent, String history, Puzzle puzzle, int[] varPos, String move, int depth
+    Node(Node parent, String history, Puzzle puzzle, int[] varPos, String move, int depth, int stepsTo
     ) {
-        this.history = history;
-        this.parent = parent;
-        this.puzzle = puzzle;
-        this.varPos = varPos;
-        this.move = move;
-        this.depth = depth;
+        this.history  =   history;
+        this.parent   =   parent;
+        this.puzzle   =   puzzle;
+        this.varPos   =   varPos;
+        this.move     =   move;
+        this.depth    =   depth;
+        this.stepsTo  =   setStepsTo();
+        this.priority =   this.depth + this.stepsTo;
         getGrid();
         computeHashCode();
+    }
+    @Override
+    public int compareTo(Node b2){
+        return (this.priority.compareTo( b2.priority));
     }
 
     public Node getParent() {
@@ -58,6 +67,7 @@ public class Node {
         int gridsize = puzzle.getGridSize();
         grid = new int[gridsize][gridsize];
 
+        // populates grid with "-1"s
         for (int i = 0; i < gridsize; i++) {
             for (int j = 0; j < gridsize; j++) {
                 grid[i][j] = -1;
@@ -154,7 +164,10 @@ public class Node {
                 int[] newVarPos = (int[]) varPos.clone();
                 newVarPos[v] = np;
                 String move = " C" + v + "." + newVarPos[v];
-                new_nodes.add(new Node(this, (history + move), puzzle, newVarPos, move, depth + 1));
+                /*
+                stepsTo is hardcoded to 0
+                 */
+                new_nodes.add(new Node(this, (history + move), puzzle, newVarPos, move, depth + 1, 0));
             }
 
             // Find all locations to right or down from current position
@@ -167,13 +180,15 @@ public class Node {
                 int[] newVarPos = (int[]) varPos.clone();
                 newVarPos[v] = np - carsize + 1;
                 String move = " C" + v + "." + newVarPos[v];
-                new_nodes.add(new Node(this, (history + move), puzzle, newVarPos, move, depth + 1));
+                /*
+                stepsTo is hardcoded to 0
+                 */
+                new_nodes.add(new Node(this, (history + move), puzzle, newVarPos, move, depth + 1, 0));
             }
 
         }
         return (Node[]) new_nodes.toArray(new Node[0]);
     }
-
 
     /**
      * Returns true if and only if this state is considered
@@ -208,4 +223,43 @@ public class Node {
 
     public void setNext(Node N){next = N;}
 
+
+    /**
+     * calculates the estimated steps until
+     * @return stepsTo
+     */
+    private int setStepsTo(){
+        System.out.println("===============================================");
+        getGrid();
+        int stepsTo = 0;
+        int row = -1;
+        int gridSize = puzzle.getGridSize();
+
+//        for (int i = 0; i < gridSize; i++) {
+//            for (int j = 0; j < gridSize; j++) {
+//                if (grid[j][i] == -1){
+//                    System.out.print(" x ");}
+//                else{
+//
+//                System.out.print(" " + grid[j][i] + " ");}
+//
+//                }
+//            System.out.println("");
+//        }
+
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                if (grid[j][i] == 0){
+                    row = i;
+                    break;
+                }
+            }
+        }
+        boolean passed = false;
+        for (int j=0; j < gridSize; j++){
+            if (grid[j][row] == 0) passed = true;
+            if (passed && grid[j][row] != 0 && grid[j][row] != -1){stepsTo++;}
+        }
+        return stepsTo;
+    }
 }
