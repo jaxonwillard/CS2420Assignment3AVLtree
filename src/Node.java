@@ -229,7 +229,6 @@ public class Node implements Comparable<Node> {
      * @return stepsTo
      */
     private int setStepsTo(){
-        System.out.println("===============================================");
         getGrid();
         int stepsTo = 0;
         int row = -1;

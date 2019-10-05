@@ -230,42 +230,50 @@ public class Puzzle {
 
         Node solution = null;
 
-        Node[] rootList = initNode.expand();
 
-        AVLTree nodeLinkedList = new AVLTree(initNode);
+        Node[] rootList = initNode.expand();
+        int nodesExpanded = 1;
+
+        AVLTree<Node> priorityQueue = new AVLTree<>();
+        priorityQueue.insert(initNode);
+
+
         for (Node i : rootList) {
-            nodeLinkedList.add(i);
+            priorityQueue.insert(i);
         }
 
         int hashKey = 0;
         Hashtable<Integer, Integer> nodesHashTable = new Hashtable<>();
 
         while (solution == null) {
-
-            for (int i = 0; i < nodeLinkedList.getSize() - 1; i++) {
-                if (nodeLinkedList.find(i).isGoal()) {
-                    solution = nodeLinkedList.find(i);
-                    break;
-                }
-                // Check if Node hash is in hash table and if not, add to nodes ArrayList
-                else{
-                    Node[] childList = nodeLinkedList.find(i).expand();
-                    for (Node newChild : childList){
-                        if (!nodesHashTable.contains(newChild.hashCode())) {
-                            nodeLinkedList.add(newChild);
-                            nodesHashTable.put(hashKey, newChild.hashCode());
-                            hashKey++;
-                        }
-                    }
-                }
+            if (priorityQueue.findMin().isGoal()){
+                solution = priorityQueue.findMin();
+                break;
             }
+            else{
+                Node[] childList = priorityQueue.findMin().expand();
+                nodesExpanded++;
+                priorityQueue.deleteMin();
+                for (Node newChild : childList){
+                    if (!nodesHashTable.contains(newChild.hashCode())){
+                        priorityQueue.insert(newChild);
+                    nodesHashTable.put(hashKey, newChild.hashCode());
+                    hashKey++;}
+                }
+
+
+            }
+
+
 
         }
 
-
+        if(doPrint){
         System.out.print("\n\nSOLUTION  of Depth " + solution.getDepth());
-        System.out.println(" Total Nodes Expanded " + nodeLinkedList.getSize() + "\n");
-        printSolution(solution);
+        System.out.println(" Total Nodes Expanded " + nodesExpanded + "\n");
+//        printSolution(solution);
+
+        System.out.println(toString());}
 
     }
 
@@ -310,10 +318,10 @@ public class Puzzle {
 
         }
 
-
+        if (doPrint){
         System.out.print("\n\nSOLUTION  of Depth " + solution.getDepth());
         System.out.println(" Total Nodes Expanded " + nodeLinkedList.getSize() + "\n");
-        printSolution(solution);
+        printSolution(solution);}
 
     }
 

@@ -32,7 +32,7 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
         root = null;
     }
 
-    
+    public AVLTree(AvlNode<AnyType> root){this.root = root;}
 
     /**
      * Insert into the tree; duplicates are ignored.
@@ -229,7 +229,6 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
         return node;
     }
 
-
     /**
      * Remove smallest item
      * @param node
@@ -240,9 +239,6 @@ public class AVLTree<AnyType extends Comparable<? super AnyType>>
             if (node.left == null){ return balance(node.right); }
             node.left = deleteMin(node.left);
             return balance(node); }
-
-
-
 
     /**
      * Internal method to find the largest item in a subtree.
