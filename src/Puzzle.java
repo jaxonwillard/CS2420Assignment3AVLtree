@@ -243,39 +243,46 @@ public class Puzzle {
         }
 
         int hashKey = 0;
-        Hashtable<Integer, Integer> nodesHashTable = new Hashtable<>();
+        Hashtable<Integer, Node> nodesHashTable = new Hashtable<>();
 
         while (solution == null) {
-            if (priorityQueue.findMin().isGoal()){
+            if (priorityQueue.findMin().isGoal()) {
                 solution = priorityQueue.findMin();
                 break;
-            }
-            else{
+            } else {
                 Node[] childList = priorityQueue.findMin().expand();
                 nodesExpanded++;
                 priorityQueue.deleteMin();
-                for (Node newChild : childList){
-                    if (!nodesHashTable.contains(newChild.hashCode())){
+                for (Node newChild : childList) {
+                    if (nodesHashTable.containsKey(newChild.hashCode())) {
+                        Node compareNode = nodesHashTable.get(newChild.hashCode());
+                        if (newChild.compareTo(compareNode) < 0) {
+                            nodesHashTable.remove(compareNode.hashCode());
+                            nodesHashTable.put(newChild.hashCode(), newChild);
+                            priorityQueue.insert(newChild);
+                        }
+                    } else {
+                        nodesHashTable.put(newChild.hashCode(), newChild);
                         priorityQueue.insert(newChild);
-                    nodesHashTable.put(hashKey, newChild.hashCode());
-                    hashKey++;}
+                    }
                 }
-
-
+                }
             }
 
+            if (doPrint) {
 
-
+                System.out.print("\n\nSOLUTION  of Depth: " + solution.getDepth());
+                System.out.println(" Total Nodes Expanded: " + nodesExpanded + "\n");
+                printSolution(solution);
+//        System.out.println(toString());
+            }
+            else{
+                System.out.println("SOLUTION of depth: " + solution.getDepth());
+                System.out.println("Total Nodes Expanded: " + nodesExpanded + "\n");
+                System.out.println(solution.toString());
+            }
         }
 
-        if(doPrint){
-        System.out.print("\n\nSOLUTION  of Depth " + solution.getDepth());
-        System.out.println(" Total Nodes Expanded " + nodesExpanded + "\n");
-//        printSolution(solution);
-
-        System.out.println(toString());}
-
-    }
 
 
 
@@ -319,9 +326,14 @@ public class Puzzle {
         }
 
         if (doPrint){
-        System.out.print("\n\nSOLUTION  of Depth " + solution.getDepth());
-        System.out.println(" Total Nodes Expanded " + nodeLinkedList.getSize() + "\n");
+        System.out.print("\n\nSOLUTION  of Depth: " + solution.getDepth());
+        System.out.println(" Total Nodes Expanded: " + nodeLinkedList.getSize() + "\n");
         printSolution(solution);}
+        else{
+            System.out.println("SOLUTION of depth: " + solution.getDepth());
+            System.out.println("Total Nodes Expanded: " + nodeLinkedList.getSize() + "\n");
+            System.out.println(solution.toString());
+        }
 
     }
 

@@ -17,12 +17,27 @@ public class TheMain {
         int num_puzzles = 40; // Turn to 40 at the end
 
         boolean doPrint = true;
-        // solve each of the first six puzzles.  The others will likely take too long
-        for (int i = 0; i < num_puzzles; i++) {
-            puzzles[i].aStarSolve(doPrint);
+        boolean doNotPrint = false;
+        System.out.println("\n---------------Solutions for first six puzzles using solve method------------- ");
+        for (int i = 0; i < 6; i++) {
+            puzzles[i].solve(doPrint);
 //            puzzles[i].printInitialNode();
         }
+
+        System.out.println("\n---------------Solutions for first six puzzles using aStarSolve method------------- ");
+        for (int i = 0; i < 6; i++) {
+            puzzles[i].aStarSolve(doPrint);
         }
+
+        System.out.println("\n---------------Example where aStarSolve was more efficient than solve------------- ");
+        puzzles[5].aStarSolve(doNotPrint);
+        puzzles[5].solve(doNotPrint);
+
+
+        for (int i = 0; i < num_puzzles; i++){
+            puzzles[i].aStarSolve(doNotPrint);
+        }
+    }
     }
 
 
